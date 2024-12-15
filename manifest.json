@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "ChatGPT Button Adder",
+  "version": "1.0",
+  "description": "在 ChatGPT 的网页上添加一个自定义按钮",
+  "permissions": ["activeTab"],
+  "host_permissions": ["https://chatgpt.com/*"],
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://chatgpt.com/*"],
+      "js": ["scripts/html2pdf.bundle.min.js", "content.js"],
+      "css": ["style.css"]
+    }
+  ]
+}
