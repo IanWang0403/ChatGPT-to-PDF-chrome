@@ -40,6 +40,22 @@
   background-color: #3e8e41; /* Even darker green on hover */
 }
 
+#saveToPdf-cancel-button {
+  background-color: #d9534f; /* Red background */
+  color: white;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  border-left: 1px solid #3e8e41; /* Seamless connection with Save button */
+  border-radius: 0 99px 99px 0; /* Rounded right corner */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#saveToPdf-cancel-button:hover {
+  background-color: #c9302c; /* Darker red on hover */
+}
+
 /* Dropdown menu */
 #saveToPdf-dropdown-menu {
   display: none; /* Hidden by default */
