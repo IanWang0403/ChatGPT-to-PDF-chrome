@@ -12,52 +12,66 @@ class PDFMessageSaver {
     const profileButton = document.querySelector(
       '[data-testid="profile-button"]'
     );
-    if (profileButton && !document.querySelector("#saveToPdf-button")) {
+    if (profileButton && !document.querySelector("#saveToPdf-button-group")) {
       this.createButtonGroup(profileButton);
     }
   }
 
   createButtonGroup(profileButton) {
-    const container = document.createElement("div");
-    container.className = "saveToPdf-button-group";
+    const buttonGroupContainer = document.createElement("div");
+    buttonGroupContainer.className = "saveToPdf-button-group";
+    buttonGroupContainer.id = "saveToPdf-button-group";
 
     const saveButton = this.createButton(
+      "saveToPdf-button",
       "Save to PDF",
-      "btn-primary",
+      "btn btn-primary",
       this.onSaveClick.bind(this)
     );
+
     const dropdownButton = this.createButton(
+      "saveToPdf-dropdown-toggle",
       "▼",
-      "btn-secondary dropdown-toggle",
-      this.onDropdownClick
+      "btn btn-secondary dropdown-toggle",
+      () => {
+        dropdownMenu.classList.toggle("hidden");
+      }
     );
+
     const cancelButton = this.createButton(
+      "saveToPdf-cancel-button",
       "X",
-      "btn-secondary",
-      this.cancelSelectMode.bind(this),
-      "hidden"
+      "btn btn-secondary",
+      this.cancelSelectMode.bind(this)
     );
+
     const dropdownMenu = this.createDropdownMenu();
 
-    container.append(saveButton, dropdownButton, cancelButton, dropdownMenu);
-    profileButton.parentNode.insertBefore(container, profileButton);
+    buttonGroupContainer.appendChild(saveButton);
+    buttonGroupContainer.appendChild(dropdownButton);
+    buttonGroupContainer.appendChild(dropdownMenu);
+
+    profileButton.parentNode.insertBefore(buttonGroupContainer, profileButton);
 
     this.saveButton = saveButton;
     this.cancelButton = cancelButton;
     this.dropdownButton = dropdownButton;
   }
 
-  createButton(text, className, onClick, additionalClass = "") {
+  createButton(id, text, className, onClick) {
     const button = document.createElement("button");
+    button.id = id;
     button.textContent = text;
-    button.className = `btn ${className} ${additionalClass}`.trim();
-    button.addEventListener("click", onClick);
+    button.className = className;
+    button.type = "button";
+    button.onclick = onClick;
     return button;
   }
 
   createDropdownMenu() {
     const menu = document.createElement("ul");
     menu.className = "dropdown-menu hidden";
+    menu.id = "saveToPdf-dropdown-menu";
 
     const selectMessagesOption = document.createElement("li");
     selectMessagesOption.textContent = "Select Messages";
