@@ -1,37 +1,59 @@
-/* Dropdown container styling */
-.saveToPdf-dropdown-container {
+/* Button group container */
+.saveToPdf-button-group {
+  display: inline-flex;
+  align-items: center;
   position: relative;
-  display: inline-block;
   font-family: Arial, sans-serif;
 }
 
-/* Dropdown button styling */
-#saveToPdf-dropdown-button {
-  background-color: #4caf50; /* Green background */
+/* Save to PDF button */
+#saveToPdf-button {
+  background-color: #4CAF50; /* Green background */
   color: white;
   padding: 10px 15px;
   font-size: 14px;
   border: none;
+  border-radius: 99px 0 0 99px; /* Rounded left corner */
   cursor: pointer;
-  border-radius: 4px;
   transition: background-color 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-#saveToPdf-dropdown-button:hover {
+#saveToPdf-button:hover {
   background-color: #45a049; /* Darker green on hover */
 }
 
-/* Dropdown menu styling */
+/* Dropdown toggle button */
+#saveToPdf-dropdown-toggle {
+  background-color: #45a049; /* Slightly darker green */
+  color: white;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  border-left: 1px solid #3e8e41; /* Seamless connection with Save button */
+  border-radius: 0 99px 99px 0; /* Rounded right corner */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#saveToPdf-dropdown-toggle:hover {
+  background-color: #3e8e41; /* Even darker green on hover */
+}
+
+/* Dropdown menu */
 #saveToPdf-dropdown-menu {
   display: none; /* Hidden by default */
   position: absolute;
+  top: 100%;
+  left: 0;
   background-color: white;
   min-width: 160px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 1;
+  z-index: 10;
   border: 1px solid #ddd;
   border-radius: 4px;
+  padding: 0;
+  margin: 5px 0 0;
 }
 
 /* Show dropdown menu when active */
@@ -56,7 +78,7 @@
 
 /* Selected messages highlight */
 .selectable-message {
-  border: 2px dashed #4caf50;
+  border: 2px dashed #4CAF50; /* Green dashed border */
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
@@ -68,7 +90,8 @@
 
 /* Responsive adjustments */
 @media screen and (max-width: 600px) {
-  #saveToPdf-dropdown-button {
+  #saveToPdf-button,
+  #saveToPdf-dropdown-toggle {
     font-size: 12px;
     padding: 8px 10px;
   }

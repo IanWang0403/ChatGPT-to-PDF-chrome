@@ -1,13 +1,4 @@
-const clearMessagesStyle = (messages) => {
-  messages.forEach((message) => {
-    message.classList.remove("selectable-message");
-    message.classList.remove("selected-message");
-    message.removeEventListener("click", function toggleSelection() {
-      message.classList.toggle("selected-message");
-    });
-  });
-};
-
+// Observer to monitor DOM changes
 const observer = new MutationObserver((mutationsList, observer) => {
   const profileButton = document.querySelector(
     '[data-testid="profile-button"]'
@@ -17,15 +8,46 @@ const observer = new MutationObserver((mutationsList, observer) => {
     // Stop observing once the target button is found
     observer.disconnect();
 
-    // Create the dropdown button
-    const dropdownContainer = document.createElement("div");
-    dropdownContainer.className = "saveToPdf-dropdown-container";
+    // Create the button group container
+    const buttonGroupContainer = document.createElement("div");
+    buttonGroupContainer.className = "saveToPdf-button-group";
 
-    const dropdownButton = document.createElement("button");
-    dropdownButton.id = "saveToPdf-dropdown-button";
-    dropdownButton.type = "button";
-    dropdownButton.textContent = "Select Action";
+    // Create the "Save to PDF" button
+    const saveToPdfButton = document.createElement("button");
+    saveToPdfButton.id = "saveToPdf-button";
+    saveToPdfButton.type = "button";
+    saveToPdfButton.textContent = "Save to PDF";
+    saveToPdfButton.className = "btn btn-primary";
 
+    // Save to PDF button functionality
+    saveToPdfButton.addEventListener("click", () => {
+      const messages = document.querySelectorAll(
+        "[data-testid^='conversation-turn-']"
+      );
+      const pdfContent = Array.from(messages)
+        .map((msg) => msg.innerText)
+        .join("\n\n");
+
+      const options = {
+        margin: 40,
+        filename: "all_messages.pdf",
+        pagebreak: { mode: ["css", "avoid-all"] },
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+      };
+
+      html2pdf().set(options).from(`<pre>${pdfContent}</pre>`).save();
+    });
+
+    // Create the dropdown toggle button
+    const dropdownToggleButton = document.createElement("button");
+    dropdownToggleButton.id = "saveToPdf-dropdown-toggle";
+    dropdownToggleButton.type = "button";
+    dropdownToggleButton.textContent = "▼";
+    dropdownToggleButton.className = "btn btn-secondary dropdown-toggle";
+
+    // Create the dropdown menu
     const dropdownMenu = document.createElement("ul");
     dropdownMenu.id = "saveToPdf-dropdown-menu";
     dropdownMenu.className = "dropdown-menu hidden";
@@ -33,7 +55,6 @@ const observer = new MutationObserver((mutationsList, observer) => {
     const selectMessagesOption = document.createElement("li");
     selectMessagesOption.textContent = "Select Messages";
     selectMessagesOption.addEventListener("click", () => {
-      alert("Click on messages to select them.");
       dropdownMenu.classList.add("hidden");
 
       const messages = document.querySelectorAll(
@@ -46,9 +67,9 @@ const observer = new MutationObserver((mutationsList, observer) => {
         });
       });
 
-      // Update the button text
-      dropdownButton.textContent = "Save as PDF";
-      dropdownButton.addEventListener("click", async () => {
+      // Update "Save to PDF" button functionality for selected messages
+      saveToPdfButton.textContent = "Save Selected to PDF";
+      saveToPdfButton.onclick = async () => {
         const selectedMessages = document.querySelectorAll(".selected-message");
         if (selectedMessages.length === 0) {
           alert("No messages selected.");
@@ -70,56 +91,25 @@ const observer = new MutationObserver((mutationsList, observer) => {
 
         try {
           await html2pdf().set(options).from(`<pre>${pdfContent}</pre>`).save();
-          alert("PDF saved successfully.");
         } catch (error) {
           alert("Failed to save PDF.");
-        } finally {
-          // Remove the selectable message class
-          clearMessagesStyle(messages);
-          dropdownButton.textContent = "Select Action";
         }
-      });
-    });
-
-    const saveAllMessagesOption = document.createElement("li");
-    saveAllMessagesOption.textContent = "Save All Messages";
-    saveAllMessagesOption.addEventListener("click", () => {
-      alert("Saving all messages as PDF...");
-      dropdownMenu.classList.add("hidden");
-
-      const messages = document.querySelectorAll(
-        "[data-testid^='conversation-turn-']"
-      );
-      const pdfContent = Array.from(messages)
-        .map((msg) => msg.innerText)
-        .join("\n\n");
-
-      const options = {
-        margin: 40,
-        filename: "all_messages.pdf",
-        pagebreak: { mode: ["css", "avoid-all"] },
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
       };
-
-      html2pdf().set(options).from(`<pre>${pdfContent}</pre>`).save();
-
-      // Remove the selectable message class
-      clearMessagesStyle(messages);
     });
 
     dropdownMenu.appendChild(selectMessagesOption);
-    dropdownMenu.appendChild(saveAllMessagesOption);
 
-    dropdownButton.addEventListener("click", () => {
+    dropdownToggleButton.addEventListener("click", () => {
       dropdownMenu.classList.toggle("hidden");
     });
 
-    dropdownContainer.appendChild(dropdownButton);
-    dropdownContainer.appendChild(dropdownMenu);
+    // Append buttons and menu to the container
+    buttonGroupContainer.appendChild(saveToPdfButton);
+    buttonGroupContainer.appendChild(dropdownToggleButton);
+    buttonGroupContainer.appendChild(dropdownMenu);
 
-    profileButton.parentNode.insertBefore(dropdownContainer, profileButton);
+    // Inject the button group into the DOM
+    profileButton.parentNode.insertBefore(buttonGroupContainer, profileButton);
   }
 });
 
