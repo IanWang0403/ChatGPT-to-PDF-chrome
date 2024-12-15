@@ -1,4 +1,13 @@
-// Observer to monitor DOM changes
+const clearMessagesStyle = (messages) => {
+  messages.forEach((message) => {
+    message.classList.remove("selectable-message");
+    message.classList.remove("selected-message");
+    message.removeEventListener("click", function toggleSelection() {
+      message.classList.toggle("selected-message");
+    });
+  });
+};
+
 const observer = new MutationObserver((mutationsList, observer) => {
   const profileButton = document.querySelector(
     '[data-testid="profile-button"]'
@@ -8,142 +17,109 @@ const observer = new MutationObserver((mutationsList, observer) => {
     // Stop observing once the target button is found
     observer.disconnect();
 
-    // Create the container for the button and dropdown
+    // Create the dropdown button
     const dropdownContainer = document.createElement("div");
-    dropdownContainer.style =
-      "position: inherit; display: inline-block; margin-right: 8px;";
+    dropdownContainer.className = "saveToPdf-dropdown-container";
 
-    // Create the main button
-    const mainButton = document.createElement("button");
-    mainButton.className = "btn relative btn-primary text-token-text-primary";
-    mainButton.setAttribute("aria-label", "Download Conversation as PDF");
-    mainButton.style =
-      "padding: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer;";
-    mainButton.textContent = "Save as PDF";
+    const dropdownButton = document.createElement("button");
+    dropdownButton.id = "saveToPdf-dropdown-button";
+    dropdownButton.type = "button";
+    dropdownButton.textContent = "Select Action";
 
-    // Create the dropdown toggle button
-    const dropdownToggle = document.createElement("button");
-    dropdownToggle.className = "btn dropdown-toggle";
-    dropdownToggle.style =
-      "padding: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; margin-left: 5px;";
-    dropdownToggle.textContent = "▼";
+    const dropdownMenu = document.createElement("ul");
+    dropdownMenu.id = "saveToPdf-dropdown-menu";
+    dropdownMenu.className = "dropdown-menu hidden";
 
-    // Create the dropdown menu
-    const dropdownMenu = document.createElement("div");
-    dropdownMenu.style = `
-            display: none;
-            position: absolute;
-            background-color: white;
-            min-width: 200px;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-            z-index: 1000;
-        `;
+    const selectMessagesOption = document.createElement("li");
+    selectMessagesOption.textContent = "Select Messages";
+    selectMessagesOption.addEventListener("click", () => {
+      alert("Click on messages to select them.");
+      dropdownMenu.classList.add("hidden");
 
-    // Create the "Select Conversation" button inside the dropdown
-    const selectConversationButton = document.createElement("button");
-    selectConversationButton.className = "dropdown-item";
-    selectConversationButton.textContent = "Select Conversation";
-    selectConversationButton.style =
-      "padding: 8px; width: 100%; text-align: left; border: none; background: none; cursor: pointer;";
-
-    // Append the dropdown item to the dropdown menu
-    dropdownMenu.appendChild(selectConversationButton);
-
-    // Add click event for the dropdown toggle
-    dropdownToggle.addEventListener("click", () => {
-      dropdownMenu.style.display =
-        dropdownMenu.style.display === "block" ? "none" : "block";
-    });
-
-    // Add click event for the "Select Conversation" button
-    selectConversationButton.addEventListener("click", () => {
-      const conversations = document.querySelectorAll(
-        '[data-testid^="conversation-turn-"]'
+      const messages = document.querySelectorAll(
+        "[data-testid^='conversation-turn-']"
       );
-
-      if (!conversations || conversations.length === 0) {
-        alert("No conversations found to select!");
-        return;
-      }
-
-      // Highlight conversations for user selection
-      conversations.forEach((conversation) => {
-        conversation.style.border = "2px solid red";
-        conversation.style.cursor = "pointer";
-
-        conversation.addEventListener("click", function onSelect() {
-          conversation.style.border = "2px solid green";
-          conversation.style.cursor = "default";
-
-          // Save selected conversation
-          dropdownContainer.selectedConversation = conversation;
-
-          // Remove event listeners and styles from other conversations
-          conversations.forEach((conv) => {
-            conv.removeEventListener("click", onSelect);
-            if (conv === conversation) return;
-
-            conv.style.border = "none";
-            conv.style.cursor = "default";
-          });
-
-          // alert("Conversation selected! You can now download it as a PDF.");
+      messages.forEach((message) => {
+        message.classList.add("selectable-message");
+        message.addEventListener("click", function toggleSelection() {
+          message.classList.toggle("selected-message");
         });
+      });
+
+      // Update the button text
+      dropdownButton.textContent = "Save as PDF";
+      dropdownButton.addEventListener("click", async () => {
+        const selectedMessages = document.querySelectorAll(".selected-message");
+        if (selectedMessages.length === 0) {
+          alert("No messages selected.");
+          return;
+        }
+
+        const pdfContent = Array.from(selectedMessages)
+          .map((msg) => msg.innerText)
+          .join("\n\n");
+
+        const options = {
+          margin: 40,
+          filename: "selected_messages.pdf",
+          pagebreak: { mode: ["css", "avoid-all"] },
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+        };
+
+        try {
+          await html2pdf().set(options).from(`<pre>${pdfContent}</pre>`).save();
+          alert("PDF saved successfully.");
+        } catch (error) {
+          alert("Failed to save PDF.");
+        } finally {
+          // Remove the selectable message class
+          clearMessagesStyle(messages);
+          dropdownButton.textContent = "Select Action";
+        }
       });
     });
 
-    // Add click event for the main button to download the selected conversation
-    mainButton.addEventListener("click", async () => {
-      const selectedConversation =
-        dropdownContainer.selectedConversation.querySelector(
-          '[data-message-author-role="assistant"]'
-        );
+    const saveAllMessagesOption = document.createElement("li");
+    saveAllMessagesOption.textContent = "Save All Messages";
+    saveAllMessagesOption.addEventListener("click", () => {
+      alert("Saving all messages as PDF...");
+      dropdownMenu.classList.add("hidden");
 
-      if (!selectedConversation) {
-        alert("Please select a conversation first!");
-        return;
-      }
+      const messages = document.querySelectorAll(
+        "[data-testid^='conversation-turn-']"
+      );
+      const pdfContent = Array.from(messages)
+        .map((msg) => msg.innerText)
+        .join("\n\n");
 
-      // Use html2pdf.js to convert the conversation to PDF
-      console.log("Generating PDF...");
       const options = {
         margin: 40,
-        filename: "chatgpt_conversation.pdf",
+        filename: "all_messages.pdf",
         pagebreak: { mode: ["css", "avoid-all"] },
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
       };
 
-      // const options = {
-      //   margin: 1,
-      //   filename: "chatgpt_conversation.pdf",
-      //   image: { type: "jpeg", quality: 0.98 },
-      //   html2canvas: { scale: 2 },
-      //   jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-      // };
+      html2pdf().set(options).from(`<pre>${pdfContent}</pre>`).save();
 
-      try {
-        await html2pdf().set(options).from(selectedConversation).save();
-        console.log("PDF saved successfully.");
-      } catch (error) {
-        console.error("Error generating PDF:", error);
-        alert("An error occurred while generating the PDF.");
-      } finally {
-        // Reset selected conversation
-        dropdownContainer.selectedConversation.style.border = "none";
-        dropdownContainer.selectedConversation = null;
-      }
+      // Remove the selectable message class
+      clearMessagesStyle(messages);
     });
 
-    // Append the buttons and menu to the container
-    dropdownContainer.appendChild(mainButton);
-    dropdownContainer.appendChild(dropdownToggle);
+    dropdownMenu.appendChild(selectMessagesOption);
+    dropdownMenu.appendChild(saveAllMessagesOption);
+
+    dropdownButton.addEventListener("click", () => {
+      dropdownMenu.classList.toggle("hidden");
+    });
+
+    dropdownContainer.appendChild(dropdownButton);
     dropdownContainer.appendChild(dropdownMenu);
 
-    // Insert the container on the left of the profile button
     profileButton.parentNode.insertBefore(dropdownContainer, profileButton);
-    console.log("Custom dropdown button added successfully on the left.");
   }
 });
 
