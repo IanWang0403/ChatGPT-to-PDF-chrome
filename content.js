@@ -41,7 +41,7 @@ class PDFMessageSaver {
     const cancelButton = this.createButton(
       "saveToPdf-cancel-button",
       "X",
-      "btn btn-secondary",
+      "btn btn-secondary hidden",
       this.cancelSelectMode.bind(this)
     );
 
@@ -50,12 +50,14 @@ class PDFMessageSaver {
     buttonGroupContainer.appendChild(saveButton);
     buttonGroupContainer.appendChild(dropdownButton);
     buttonGroupContainer.appendChild(dropdownMenu);
+    buttonGroupContainer.appendChild(cancelButton);
 
     profileButton.parentNode.insertBefore(buttonGroupContainer, profileButton);
 
     this.saveButton = saveButton;
     this.cancelButton = cancelButton;
     this.dropdownButton = dropdownButton;
+    this.dropdownMenu = dropdownMenu;
   }
 
   createButton(id, text, className, onClick) {
@@ -130,18 +132,26 @@ class PDFMessageSaver {
   }
 
   createPdfContainer(messages) {
-    const container = document.createElement("div");
-    messages.forEach((msg, index) => {
-      const cloned = msg.cloneNode(true);
-      container.appendChild(cloned);
-      if (index < messages.length - 1) {
-        const divider = document.createElement("div");
-        divider.style.borderTop = "1px solid #ccc";
-        divider.style.margin = "10px 0";
-        container.appendChild(divider);
-      }
-    });
-    return container;
+    let pdfContainer;
+
+    if (messages.length === 1) {
+      pdfContainer = messages[0].querySelector(
+        '[data-message-author-role="assistant"]'
+      );
+    } else {
+      pdfContainer = document.createElement("div");
+      messages.forEach((msg, index) => {
+        const cloned = msg.cloneNode(true);
+        pdfContainer.appendChild(cloned);
+        if (index < messages.length - 1) {
+          const divider = document.createElement("div");
+          divider.style.borderTop = "1px solid #ccc";
+          divider.style.margin = "10px 0";
+          pdfContainer.appendChild(divider);
+        }
+      });
+    }
+    return pdfContainer;
   }
 
   onSelectMessagesClick() {
@@ -155,6 +165,7 @@ class PDFMessageSaver {
 
     this.saveButton.textContent = "Save 0 Selected Messages";
     this.dropdownButton.classList.add("hidden");
+    this.dropdownMenu.classList.add("hidden");
     this.cancelButton.classList.remove("hidden");
   }
 
