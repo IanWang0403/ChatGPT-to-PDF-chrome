@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ChatGPT Button Adder",
+  "name": "ChatGPT to PDF",
   "version": "1.0",
-  "description": "在 ChatGPT 的网页上添加一个自定义按钮",
+  "description": "100% free and open-source PDF saver for chat messages with no expiration. Unlimited message selection and full conversation exports - always free, no premium versions, no ads. Save ChatGPT conversations and other chats as permanent PDF documents at no cost.",
   "permissions": ["activeTab"],
   "host_permissions": ["https://chatgpt.com/*"],
   "icons": {

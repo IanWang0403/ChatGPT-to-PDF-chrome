@@ -1,9 +1,118 @@
-#customButton {
+/* Button group container */
+.saveToPdf-button-group {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  font-family: Arial, sans-serif;
+}
+
+/* Save to PDF button */
+#saveToPdf-button {
+  background-color: #4CAF50; /* Green background */
+  color: white;
+  padding: 10px 15px;
   font-size: 14px;
+  border: none;
+  border-radius: 99px 0 0 99px; /* Rounded left corner */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#saveToPdf-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+/* Dropdown toggle button */
+#saveToPdf-dropdown-toggle {
+  background-color: #45a049; /* Slightly darker green */
+  color: white;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  border-left: 1px solid #3e8e41; /* Seamless connection with Save button */
+  border-radius: 0 99px 99px 0; /* Rounded right corner */
+  cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-#customButton:hover {
-  background-color: #45a049;
+#saveToPdf-dropdown-toggle:hover {
+  background-color: #3e8e41; /* Even darker green on hover */
+}
+
+#saveToPdf-cancel-button {
+  background-color: #d9534f; /* Red background */
+  color: white;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  border-left: 1px solid #3e8e41; /* Seamless connection with Save button */
+  border-radius: 0 99px 99px 0; /* Rounded right corner */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#saveToPdf-cancel-button:hover {
+  background-color: #c9302c; /* Darker red on hover */
+}
+
+/* Dropdown menu */
+#saveToPdf-dropdown-menu {
+  display: none; /* Hidden by default */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0;
+  margin: 5px 0 0;
+}
+
+/* Show dropdown menu when active */
+#saveToPdf-dropdown-menu:not(.hidden) {
+  display: block;
+}
+
+/* Dropdown menu items */
+#saveToPdf-dropdown-menu li {
+  padding: 10px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 14px;
+  color: #333;
+  transition: background-color 0.2s ease;
+}
+
+/* Hover effect for menu items */
+#saveToPdf-dropdown-menu li:hover {
+  background-color: #f2f2f2; /* Light gray on hover */
+}
+
+/* Selected messages highlight */
+.selectable-message {
+  border: 2px dashed #4CAF50; /* Green dashed border */
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.selected-message {
+  background-color: #dff0d8; /* Light green background */
+  border-color: #3c763d; /* Dark green border */
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 600px) {
+  #saveToPdf-button,
+  #saveToPdf-dropdown-toggle {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
+  #saveToPdf-dropdown-menu li {
+    font-size: 12px;
+  }
 }
