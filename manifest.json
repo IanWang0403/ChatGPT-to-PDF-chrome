@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ChatGPT to PDF",
   "version": "1.0",
-  "description": "100% free and open-source PDF saver for chat messages with no expiration. Unlimited message selection and full conversation exports - always free, no premium versions, no ads. Save ChatGPT conversations and other chats as permanent PDF documents at no cost.",
+  "description": "Save ChatGPT conversations as PDF documents with unlimited message selection - free and open-source.",
   "permissions": ["activeTab"],
   "host_permissions": ["https://chatgpt.com/*"],
   "icons": {
