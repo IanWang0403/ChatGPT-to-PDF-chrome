@@ -104,6 +104,38 @@
   border-color: #3c763d; /* Dark green border */
 }
 
+/* Floating button positioning (fallback mode) */
+.saveToPdf-button-group[style*="position: fixed"] {
+  display: flex !important;
+  flex-direction: row;
+  gap: 2px;
+}
+
+.saveToPdf-button-group[style*="position: fixed"] #saveToPdf-button {
+  border-radius: 6px 0 0 6px;
+  font-size: 12px;
+  padding: 8px 12px;
+}
+
+.saveToPdf-button-group[style*="position: fixed"] #saveToPdf-dropdown-toggle {
+  border-radius: 0 6px 6px 0;
+  font-size: 12px;
+  padding: 8px 10px;
+}
+
+.saveToPdf-button-group[style*="position: fixed"] #saveToPdf-cancel-button {
+  border-radius: 0 6px 6px 0;
+  font-size: 12px;
+  padding: 8px 10px;
+}
+
+.saveToPdf-button-group[style*="position: fixed"] #saveToPdf-dropdown-menu {
+  top: calc(100% + 4px);
+  right: 0;
+  left: auto;
+  min-width: 140px;
+}
+
 /* Responsive adjustments */
 @media screen and (max-width: 600px) {
   #saveToPdf-button,
